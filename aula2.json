@@ -1,0 +1,10 @@
+[
+    { 
+        "pergunta": "O que faz a Fetch API?", 
+        "resposta": "Ela envia requisições de rede para buscar recursos, como arquivos de configuração ou dados de servidores." 
+    },
+    { 
+        "pergunta": "Por que usamos funções assíncronas (async)?", 
+        "resposta": "Para permitir que o navegador execute outras tarefas enquanto aguarda o carregamento de arquivos pesados ou externos." 
+    }
+]

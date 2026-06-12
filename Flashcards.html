@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards Dinâmicos por Aula</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Menu de Seleção de Aulas */
+        .selector-container {
+            margin-bottom: 25px;
+        }
+
+        select {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 2px solid #3b82f6;
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .flashcard-container {
+            perspective: 1000px; 
+            width: 350px;
+            height: 220px;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .front {
+            background-color: #ffffff;
+            color: #333333;
+            border: 2px solid #3b82f6;
+        }
+
+        .back {
+            background-color: #3b82f6;
+            color: #ffffff;
+            transform: rotateY(180deg);
+        }
+
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        button:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .counter {
+            font-size: 1rem;
+            color: #64748b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="selector-container">
+        <label for="aula-select">Escolha a Aula: </label>
+        <select id="aula-select" onchange="trocarAula()">
+            <option value="aula1.json">Aula 1: Introdução ao JSON</option>
+            <option value="aula2.json">Aula 2: Conceitos Avançados</option>
+        </select>
+    </div>
+
+    <div class="flashcard-container" onclick="flipCard()">
+        <div class="flashcard" id="card">
+            <div class="face front" id="text-front">Buscando pergunta...</div>
+            <div class="face back" id="text-back">Buscando resposta...</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="btn-prev" onclick="prevCard(event)">Anterior</button>
+        <span class="counter" id="card-counter">0 / 0</span>
+        <button id="btn-next" onclick="nextCard(event)">Próximo</button>
+    </div>
+
+    <script>
+        let meusFlashcards = []; // Começa vazio e será preenchido pelo arquivo JSON
+        let indexAtual = 0;
+
+        const cardElement = document.getElementById('card');
+        const textFront = document.getElementById('text-front');
+        const textBack = document.getElementById('text-back');
+        const cardCounter = document.getElementById('card-counter');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const aulaSelect = document.getElementById('aula-select');
+
+        // 1. CARREGAMENTO ASSÍNCRONO DOS ARQUIVOS
+        async function carregarDadosAula(arquivoJson) {
+            try {
+                textFront.innerText = "Carregando dados...";
+                textBack.innerText = "Carregando dados...";
+                
+                // Faz a busca do arquivo local
+                const resposta = await fetch(arquivoJson);
+                
+                // Converte o texto puro do arquivo em uma lista (Array) de JavaScript
+                meusFlashcards = await resposta.json();
+                
+                // Reinicia o contador para o primeiro card da nova lista
+                indexAtual = 0;
+                renderCard();
+            } catch (erro) {
+                console.error("Erro ao carregar o arquivo JSON:", erro);
+                textFront.innerText = "Erro ao carregar a aula. Verifique o servidor local.";
+            }
+        }
+
+        // 2. EXIBIÇÃO EM TELA
+        function renderCard() {
+            if (meusFlashcards.length === 0) return;
+
+            cardElement.classList.remove('flipped'); 
+            
+            textFront.innerText = meusFlashcards[indexAtual].pergunta;
+            textBack.innerText = meusFlashcards[indexAtual].resposta;
+
+            cardCounter.innerText = `${indexAtual + 1} / ${meusFlashcards.length}`;
+
+            btnPrev.disabled = indexAtual === 0;
+            btnNext.disabled = indexAtual === meusFlashcards.length - 1;
+        }
+
+        // 3. EVENTO DE TROCA DE AULA
+        function trocarAula() {
+            const arquivoSelecionado = aulaSelect.value;
+            carregarDadosAula(arquivoSelecionado);
+        }
+
+        // 4. CONTROLES BÁSICOS
+        function flipCard() {
+            cardElement.classList.toggle('flipped');
+        }
+
+        function nextCard(event) {
+            event.stopPropagation();
+            if (indexAtual < meusFlashcards.length - 1) {
+                indexAtual++;
+                renderCard();
+            }
+        }
+
+        function prevCard(event) {
+            event.stopPropagation();
+            if (indexAtual > 0) {
+                indexAtual--;
+                renderCard();
+            }
+        }
+
+        // Inicializa o app carregando o primeiro arquivo da lista automaticamente
+        carregarDadosAula(aulaSelect.value);
+    </script>
+
+</body>
+</html>
