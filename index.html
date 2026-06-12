@@ -173,7 +173,7 @@
         <button class="btn-nav" id="btn-next" onclick="nextCard(event)">Próximo</button>
     </div>
 
-    <script>
+<script>
         let meusFlashcards = [];
         let indexAtual = 0;
 
@@ -185,7 +185,7 @@
         const btnNext = document.getElementById('btn-next');
         const aulaSelect = document.getElementById('aula-select');
 
-        // Busca o arquivo JSON de forma assíncrona na estrutura do GitHub
+        // Carrega o arquivo JSON apenas UMA vez quando a aula é selecionada
         async function carregarDadosAula(arquivoJson) {
             try {
                 textFront.innerText = "Carregando dados...";
@@ -194,7 +194,7 @@
                 const resposta = await fetch(arquivoJson);
                 meusFlashcards = await resposta.json();
                 
-                indexAtual = 0;
+                indexAtual = 0; // Zera o índice apenas ao trocar de aula
                 renderCard();
             } catch (erro) {
                 console.error("Erro ao carregar o arquivo JSON:", erro);
@@ -202,14 +202,22 @@
             }
         }
 
+        // Apenas exibe o card baseado no indexAtual
         function renderCard() {
             if (meusFlashcards.length === 0) return;
-            cardElement.className = 'flashcard'; // Limpa estados antigos
             
+            // Garante que o card volte para a frente ao mudar de pergunta
+            cardElement.classList.remove('flipped'); 
+            cardElement.classList.remove('shake');
+            
+            // Atualiza os textos
             textFront.innerText = meusFlashcards[indexAtual].pergunta;
             textBack.innerText = meusFlashcards[indexAtual].resposta;
+            
+            // Atualiza o contador (ex: 1 / 3)
             cardCounter.innerText = `${indexAtual + 1} / ${meusFlashcards.length}`;
 
+            // Controla a ativação dos botões
             btnPrev.disabled = indexAtual === 0;
             btnNext.disabled = indexAtual === meusFlashcards.length - 1;
         }
@@ -242,24 +250,24 @@
             }, 500);
         }
 
+        /* --- FUNÇÕES CORRIGIDAS: Agora elas apenas mudam o índice e renderizam --- */
         function nextCard(event) {
-            event.stopPropagation();
+            event.stopPropagation(); // Impede o giro do card ao clicar no botão
             if (indexAtual < meusFlashcards.length - 1) {
-                indexAtual++;
-                carregarDadosAula(aulaSelect.value); // Recarrega garantindo reset visual
-                setTimeout(() => { indexAtual; renderCard(); }, 50);
+                indexAtual++; // Avança para o próximo índice
+                renderCard(); // Atualiza a tela
             }
         }
 
         function prevCard(event) {
             event.stopPropagation();
             if (indexAtual > 0) {
-                indexAtual--;
-                renderCard();
+                indexAtual--; // Retorna para o índice anterior
+                renderCard(); // Atualiza a tela
             }
         }
 
-        // Inicializa o app buscando o primeiro JSON configurado no select
+        // Inicialização
         carregarDadosAula(aulaSelect.value);
     </script>
 
