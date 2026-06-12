@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcards Didáticos - GitHub Pages</title>
+    <title>Flashcards</title>
     
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -36,8 +36,8 @@
 
         .flashcard-container {
             perspective: 1000px; 
-            width: 350px;
-            height: 220px;
+            width: 500px;
+            height: 300px;
             cursor: pointer;
         }
 
@@ -63,7 +63,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 50px;
             box-sizing: border-box;
             border-radius: 15px;
             text-align: center;
@@ -137,7 +137,7 @@
         .btn-nav:disabled { background-color: #cbd5e1; cursor: not-allowed; }
 
         .btn-success { background-color: #10b981; }
-        .btn-danger { background-color: #f43f5e; }
+        .btn-danger { background-color: #eabbc3; }
 
         .counter {
             font-size: 1rem;
@@ -149,7 +149,6 @@
 <body>
 
     <div class="selector-container">
-        <label for="aula-select">Escolha a Aula: </label>
         <select id="aula-select" onchange="trocarAula()">
             <option value="aula1.json">Aula 1: Conceitos Iniciais</option>
             <option value="aula2.json">Aula 2: Desenvolvimento Avançado</option>
@@ -164,8 +163,8 @@
     </div>
 
     <div class="feedback-buttons">
-        <button class="btn-danger" onclick="feedbackErro(event)">Errei ❌</button>
-        <button class="btn-success" onclick="feedbackAcerto(event)">Acertei 🎉</button>
+        <button class="btn-danger" onclick="feedbackErro(event)">Errada ❌</button>
+        <button class="btn-success" onclick="feedbackAcerto(event)">Correta 🎉</button>
     </div>
 
     <div class="controls">
