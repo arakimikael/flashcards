@@ -193,8 +193,8 @@
 
     <div class="top-bar">
         <select id="aula-select" onchange="trocarAula()">
-            <option value="aula1.json">Aula 1: Conceitos Iniciais</option>
-            <option value="aula2.json">Aula 2: Desenvolvimento Avançado</option>
+            <option value="aula1.xlsx">Aula 1: Conceitos Iniciais</option>
+            <option value="aula2.xlsx">Aula 2: Desenvolvimento Avançado</option>
         </select>
         <button class="btn-download" onclick="baixarAula(event)">Baixar Conteúdo 📥</button>
     </div>
@@ -263,7 +263,9 @@
         }
 
         function trocarAula() {
-            carregarDadosAula(aulaSelect.value);
+            // Substitui a extensão .xlsx por .json apenas para ler os flashcards textuais
+            const arquivoJson = aulaSelect.value.replace('.xlsx', '.json');
+            carregarDadosAula(arquivoJson);
         }
 
         function flipCard() {
@@ -316,29 +318,25 @@
             }
         }
 
-        /* --- IMPLEMENTAÇÃO: DOWNLOAD DO CONTEÚDO ATUAL --- */
+        /* --- IMPLEMENTAÇÃO: DOWNLOAD DIRETO DO DIRETÓRIO DO GITHUB --- */
         function baixarAula(event) {
-            event.stopPropagation();
-            if (meusFlashcards.length === 0) return;
-
-            // Converte o objeto atual da memória de volta para string estruturada do JSON
-            const dataStr = JSON.stringify(meusFlashcards, null, 4);
+            event.stopPropagation(); // Impede o card de girar ao clicar no botão
             
-            // Cria um arquivo binário virtual (Blob) contendo o texto estruturado do JSON
-            const blob = new Blob([dataStr], { type: "application/json" });
+            // Pega o valor selecionado (ex: "aula1.xlsx")
+            const nomeArquivoExcel = aulaSelect.value; 
             
-            // Gera um link temporário para o download
-            const url = URL.createObjectURL(blob);
+            // Cria o caminho apontando para a pasta onde estão suas planilhas no GitHub
+            const caminhoArquivo = `planilhas/${nomeArquivoExcel}`;
+            
+            // Cria um link temporário idêntico a um link comum da internet
             const linkTemporario = document.createElement('a');
+            linkTemporario.href = caminhoArquivo;
+            linkTemporario.download = nomeArquivoExcel; // Força o navegador a baixar
             
-            linkTemporario.href = url;
-            linkTemporario.download = aulaSelect.value; // Nomeia o download com o nome atual (ex: aula1.json)
-            
-            // Força o clique invisível para iniciar o download e limpa a memória do navegador
+            // Executa o download clicando invisivelmente no link
             document.body.appendChild(linkTemporario);
             linkTemporario.click();
             document.body.removeChild(linkTemporario);
-            URL.revokeObjectURL(url);
         }
 
         // Inicialização padrão puxando a primeira aula configurada
