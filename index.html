@@ -8,6 +8,23 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
+        /* Definição das cores usando variáveis para os dois modos */
+        :root {
+            --bg-color: #f0f2f5;
+            --card-front-bg: #ffffff;
+            --card-front-text: #333333;
+            --card-front-border: #3b82f6;
+            --text-color: #1e3a8a;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121214;
+            --card-front-bg: #1a1a1e;
+            --card-front-text: #e1e1e6;
+            --card-front-border: #60a5fa;
+            --text-color: #93c5fd;
+        }
+
         body {
             margin: 0;
             height: 100vh;
@@ -15,12 +32,18 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: #f0f2f5;
+            background-color: var(--bg-color);
+            color: var(--card-front-text);
             font-family: Arial, sans-serif;
+            transition: background-color 0.3s;
         }
 
-        .selector-container {
+        /* Topo da página: Alinhamento do Select e do Download */
+        .top-bar {
+            display: flex;
+            gap: 10px;
             margin-bottom: 25px;
+            align-items: center;
         }
 
         select {
@@ -28,10 +51,10 @@
             font-size: 1rem;
             border-radius: 5px;
             border: 2px solid #3b82f6;
-            background: white;
+            background: var(--card-front-bg);
+            color: var(--card-front-text);
             cursor: pointer;
             font-weight: bold;
-            color: #1e3a8a;
         }
 
         .flashcard-container {
@@ -47,7 +70,7 @@
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             border-radius: 15px;
         }
 
@@ -72,20 +95,19 @@
         }
 
         .front {
-            background-color: #ffffff;
-            color: #333333;
-            border: 2px solid #3b82f6;
-            transition: background-color 0.3s, border-color 0.3s;
+            background-color: var(--card-front-bg);
+            color: var(--card-front-text);
+            border: 2px solid var(--card-front-border);
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
         }
 
         .back {
             background-color: #3b82f6;
             color: #ffffff;
             transform: rotateY(180deg);
-            transition: background-color 0.3s;
         }
 
-        /* --- ANIMAÇÃO DE ERRO (VIBRAÇÃO E VERMELHO SUAVE) --- */
+        /* --- ANIMAÇÃO DE ERRO --- */
         .shake {
             animation: shakeAnima 0.5s ease-in-out;
         }
@@ -93,6 +115,7 @@
         .shake .front {
             background-color: #fee2e2;
             border-color: #ef4444;
+            color: #b91c1c;
         }
         .shake .back {
             background-color: #ef4444;
@@ -135,24 +158,45 @@
 
         .btn-nav { background-color: #3b82f6; }
         .btn-nav:disabled { background-color: #cbd5e1; cursor: not-allowed; }
-
         .btn-success { background-color: #10b981; }
         .btn-danger { background-color: #f43f5e; }
+        
+        .btn-download {
+            background-color: #8b5cf6; /* Roxo para destacar */
+            padding: 10px 15px;
+        }
 
         .counter {
             font-size: 1rem;
             color: #64748b;
             font-weight: bold;
         }
+
+        /* --- BOTÃO DE ALTERNAR TEMA (FIXO NO CANTO INFERIOR DIREITO) --- */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #374151;
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
-    <div class="selector-container">
+    <div class="top-bar">
         <select id="aula-select" onchange="trocarAula()">
-            <option value="aula1.json">Aula 1: Noções Básicas de Excel</option>
-            <option value="aula2.json">Aula 2: Algumas Funções Essenciais no Excel</option>
+            <option value="aula1.json">Aula 1: Conceitos Iniciais</option>
+            <option value="aula2.json">Aula 2: Desenvolvimento Avançado</option>
         </select>
+        <button class="btn-download" onclick="baixarAula(event)">Baixar Conteúdo 📥</button>
     </div>
 
     <div class="flashcard-container" onclick="flipCard()">
@@ -173,7 +217,9 @@
         <button class="btn-nav" id="btn-next" onclick="nextCard(event)">Próximo</button>
     </div>
 
-<script>
+    <button class="theme-toggle" onclick="toggleTheme()">Alternar Tema 🌓</button>
+
+    <script>
         let meusFlashcards = [];
         let indexAtual = 0;
 
@@ -185,7 +231,6 @@
         const btnNext = document.getElementById('btn-next');
         const aulaSelect = document.getElementById('aula-select');
 
-        // Carrega o arquivo JSON apenas UMA vez quando a aula é selecionada
         async function carregarDadosAula(arquivoJson) {
             try {
                 textFront.innerText = "Carregando dados...";
@@ -194,7 +239,7 @@
                 const resposta = await fetch(arquivoJson);
                 meusFlashcards = await resposta.json();
                 
-                indexAtual = 0; // Zera o índice apenas ao trocar de aula
+                indexAtual = 0; 
                 renderCard();
             } catch (erro) {
                 console.error("Erro ao carregar o arquivo JSON:", erro);
@@ -202,22 +247,17 @@
             }
         }
 
-        // Apenas exibe o card baseado no indexAtual
         function renderCard() {
             if (meusFlashcards.length === 0) return;
             
-            // Garante que o card volte para a frente ao mudar de pergunta
             cardElement.classList.remove('flipped'); 
             cardElement.classList.remove('shake');
             
-            // Atualiza os textos
             textFront.innerText = meusFlashcards[indexAtual].pergunta;
             textBack.innerText = meusFlashcards[indexAtual].resposta;
             
-            // Atualiza o contador (ex: 1 / 3)
             cardCounter.innerText = `${indexAtual + 1} / ${meusFlashcards.length}`;
 
-            // Controla a ativação dos botões
             btnPrev.disabled = indexAtual === 0;
             btnNext.disabled = indexAtual === meusFlashcards.length - 1;
         }
@@ -250,24 +290,58 @@
             }, 500);
         }
 
-        /* --- FUNÇÕES CORRIGIDAS: Agora elas apenas mudam o índice e renderizam --- */
         function nextCard(event) {
-            event.stopPropagation(); // Impede o giro do card ao clicar no botão
+            event.stopPropagation(); 
             if (indexAtual < meusFlashcards.length - 1) {
-                indexAtual++; // Avança para o próximo índice
-                renderCard(); // Atualiza a tela
+                indexAtual++; 
+                renderCard(); 
             }
         }
 
         function prevCard(event) {
             event.stopPropagation();
             if (indexAtual > 0) {
-                indexAtual--; // Retorna para o índice anterior
-                renderCard(); // Atualiza a tela
+                indexAtual--; 
+                renderCard(); 
             }
         }
 
-        // Inicialização
+        /* --- IMPLEMENTAÇÃO: RECURSO DE TEMA CLARO/ESCURO --- */
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        }
+
+        /* --- IMPLEMENTAÇÃO: DOWNLOAD DO CONTEÚDO ATUAL --- */
+        function baixarAula(event) {
+            event.stopPropagation();
+            if (meusFlashcards.length === 0) return;
+
+            // Converte o objeto atual da memória de volta para string estruturada do JSON
+            const dataStr = JSON.stringify(meusFlashcards, null, 4);
+            
+            // Cria um arquivo binário virtual (Blob) contendo o texto estruturado do JSON
+            const blob = new Blob([dataStr], { type: "application/json" });
+            
+            // Gera um link temporário para o download
+            const url = URL.createObjectURL(blob);
+            const linkTemporario = document.createElement('a');
+            
+            linkTemporario.href = url;
+            linkTemporario.download = aulaSelect.value; // Nomeia o download com o nome atual (ex: aula1.json)
+            
+            // Força o clique invisível para iniciar o download e limpa a memória do navegador
+            document.body.appendChild(linkTemporario);
+            linkTemporario.click();
+            document.body.removeChild(linkTemporario);
+            URL.revokeObjectURL(url);
+        }
+
+        // Inicialização padrão puxando a primeira aula configurada
         carregarDadosAula(aulaSelect.value);
     </script>
 
