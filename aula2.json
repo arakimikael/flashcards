@@ -1,10 +1,18 @@
 [
     { 
-        "pergunta": "O que faz a Fetch API?", 
-        "resposta": "Ela envia requisições de rede para buscar recursos, como arquivos de configuração ou dados de servidores." 
+        "pergunta": "Na célula C3 tenho o valor 124, e na H3 o valor 7. Como faço para multiplicá-lo (escreva em fórmula)?", 
+        "resposta": "=C3*H7" 
     },
     { 
-        "pergunta": "Por que usamos funções assíncronas (async)?", 
-        "resposta": "Para permitir que o navegador execute outras tarefas enquanto aguarda o carregamento de arquivos pesados ou externos." 
+        "pergunta": "O que é um intervalo e o que é uma tabela?", 
+        "resposta": "Um intervalo é uma seleção de várias células. Uma tabela é um conjunto de colunas e linhas com dados." 
+    },
+    { 
+        "pergunta": "O que a função MÉDIA faz?", 
+        "resposta": "Calcula a média de um conjunto de dados. Em outras palavras, encontra o valor do meio em um grupo de valores." 
+    },
+    { 
+        "pergunta": "Como podemos calcular os juros sobre um valor?", 
+        "resposta": "Multiplicando o valor pelo percentual de juros." 
     }
 ]
