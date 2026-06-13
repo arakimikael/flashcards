@@ -17,6 +17,6 @@
     },
     { 
         "pergunta": "Qual a maneira correta de escrever a função de SOMA?", 
-        "resposta": "=SOMA(A1:A9) / =SOMA(A1+A9) / =SOMA(A1,A2,A3...A9)" 
+        "resposta": "=SOMA(A1:A9)" 
     }
 ]
