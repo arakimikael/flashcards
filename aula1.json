@@ -1,10 +1,22 @@
 [
     { 
-        "pergunta": "O que faz a propriedade '@keyframes' no CSS?", 
-        "resposta": "Ela permite criar o passo a passo de uma animação, definindo os estilos que o elemento terá em determinados momentos." 
+        "pergunta": "O que é uma fórmula em Excel?", 
+        "resposta": "São equações que realizam cálculos e outros tipos de operações como comparação ou referência. É uma forma de você instruir o Excel o que ele deve fazer com os dados que você fornece." 
     },
     { 
-        "pergunta": "Para que serve o método 'event.stopPropagation()'?", 
-        "resposta": "Para evitar que o clique em um botão dispare eventos nos elementos que estão atrás dele, como o giro do card." 
+        "pergunta": "O que é uma célula e qual seu papel numa planilha?", 
+        "resposta": "É o encontro da coluna com a linha. É nela que lançamos dados como números, textos, datas e outros tipos." 
+    },
+    { 
+        "pergunta": "O que é possível fazer com o Excel?", 
+        "resposta": "É possível criar planilhas para diversos objetivos, desde controle de caixa até um sistema informatizado." 
+    },
+    { 
+        "pergunta": "O que é uma função?", 
+        "resposta": "Uma função é um fórmula pré-definida do Excel que facilita em realizar alguns cálculos e operações. É como uma batedeira automática. Eu posso bater com uma batedeira comum, mas fica muito mais fácil (e menos cansativo) usar uma elétrica." 
+    },
+    { 
+        "pergunta": "Qual a maneira correta de escrever a função de SOMA?", 
+        "resposta": "=SOMA(A1:A9) / =SOMA(A1+A9) / =SOMA(A1,A2,A3...A9)" 
     }
 ]
